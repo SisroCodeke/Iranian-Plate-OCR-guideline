@@ -4,7 +4,7 @@ This guide details the necessary steps to set up your development environment fo
 
 ## Prerequisites
 
-Before you begin, ensure you have **Anaconda** or **Miniconda** installed on your system. If you don't, you will need to download and install one of them from  [anaconda](https://www.anaconda.com/download). we use conda since it will simplify CUDA related processess and reduce the chance of dependency problems
+Before you begin, ensure you have **Anaconda** or **Miniconda** installed on your system. If you don't, you will need to download and install one of them from  [anaconda](https://www.anaconda.com/download). We will use conda since it will simplify CUDA related processess and reduce the chance of dependency problems
 
 ## Setting up a Conda Environment
 
