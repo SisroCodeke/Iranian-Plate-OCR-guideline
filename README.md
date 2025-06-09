@@ -1,6 +1,6 @@
 # Iranian-Plate-OCR-guideline
 End-to-end Iranian license plate recognition pipeline using Ultralytics YOLO. Includes environment setup, dataset processing, training, validation, and inference for IR-LPR infrared plate images
-# Iranian-LPR-YOLOv8
+# Iranian-LPR
 
 An end-to-end pipeline for Iranian License Plate Recognition (LPR) using the Ultralytics YOLO framework. This repository provides a step-by-step guide covering environment setup, dataset preparation, model training, validation, and inference using iranian license plate images from the IR-LPR dataset.
 
