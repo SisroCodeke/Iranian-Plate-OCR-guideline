@@ -17,7 +17,18 @@ This project implements an automatic system to detect and recognise characters f
 
 This repository is structured to provide a clear, step-by-step guide. Each major phase of the pipeline is detailed in its own markdown file.
 
-/ ├── README.md           - Project introduction and overview ├── 1_Environment_Setup.md - Guide to setting up the required software environment (Conda, Ultralytics) ├── 2_Dataset_Preparation.md - Instructions for downloading and preparing the IR-LPR dataset ├── 3_Training.md         - Guide for training the YOLO model ├── 4_Validation.md       - Steps for validating the trained model ├── 5_Inference_Example.md - How to use the model for predictions └── requirements.txt      - (Optional but recommended) List of dependencies
+/
+├── README.md                    # Project introduction and overview  
+├── docs/                        # Documentation guides  
+│   ├── 1_Environment_Setup.md   # Software setup (Conda, Ultralytics)  
+│   ├── 2_Dataset_Preparation/   # Dataset-related guides  
+│   │   └── Dataset_Preparation.md  # Downloading/preparing IR-LPR dataset  
+│   ├── 3_Training/              # Training guides  
+│   │   └── Training.md          # YOLO model training steps  
+│   ├── 4_Validation/            # Validation guides  
+│   │   └── Validation.md        # Model validation steps  
+│   └── 5_Inference_Example/     # Inference guides  
+│       └── Inference_Example.md # How to run predictions  
 
 *(Note: The numbering (1, 2, 3, 4, 5) follows a logical flow for the guide, addressing your requested steps in a practical order: Environment -> Dataset -> Train -> Validate -> Example. This means step 3 in the guide is 'Training', step 4 is 'Validation', and step 5 is 'Inference Example'.)*
 
