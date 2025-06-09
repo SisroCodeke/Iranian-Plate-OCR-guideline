@@ -36,7 +36,7 @@ This repository is structured to provide a clear, step-by-step guide. Each major
 
 Follow the numbered markdown files in sequence to set up the project and run the pipeline.
 
-1.  [Environment Setup](1_Environment_Setup.md)
+1.  [Environment Setup](Docs/1_Environment_Setup.md)
 2.  [Dataset Preparation](2_Dataset_Preparation.md)
 3.  [Training](3_Training.md)
 4.  [Validation](4_Validation.md)
