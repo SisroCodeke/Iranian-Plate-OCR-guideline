@@ -1,14 +1,21 @@
 # 1. Environment Setup
 
-This guide details the necessary steps to set up your development environment for the Iranian License Plate Recognition (LPR) project using **Conda** and **Ultralytics**. A properly configured environment is crucial for managing dependencies and ensuring the project runs smoothly.
+This guide details the necessary steps to set up your development environment for the Iranian License Plate Recognition (LPR) project using **Conda** and **Ultralytics**. A properly configured environment is crucial for managing dependencies and ensuring the project runs smoothly.  
+*(base on [ultralytics conda quickstart](https://docs.ultralytics.com/guides/conda-quickstart)).*  
 
-## Prerequisites
+we will  
+1- install conda
+2- create Environment
+3- install dependencies for using GPU for [training step](Docs/3_Training/3_Training.md) in the future
+
+
+## 1-1 Installing Conda/Miniconda
 
 Before you begin, ensure you have **Anaconda** or **Miniconda** installed on your system. If you don't, you will need to download them from  [anaconda](https://www.anaconda.com/download). We will use conda since it will simplify CUDA related processess and reduce the chance of dependency problems
 
-## Setting up a Conda Environment
+## 1-2 Setting up Conda Environment
 
-Using a dedicated Conda environment helps isolate project dependencies and prevents conflicts. Follow these steps to create and activate a new environment for this project:
+after installations Using a dedicated Conda environment helps isolate project dependencies and prevents conflicts. Follow these steps to create and activate a new environment for this project:
 
 1.  **Create a new Conda environment**. Open your terminal or command prompt and run the following command. This creates an environment named `ultralytics-env` with Python 3.12(latest python version supported by ultralytics):
 
@@ -24,7 +31,7 @@ Using a dedicated Conda environment helps isolate project dependencies and preve
 
     Your terminal prompt should change to indicate that you are now inside the `ultralytics-env` environment.
 
-## Installing Ultralytics
+## 1-3 Installing Ultralytics
 
 With the environment activated, you can now install the Ultralytics package.
 
@@ -41,37 +48,6 @@ With the environment activated, you can now install the Ultralytics package.
     ```
     *(Note: The `pytorch-cuda=11.8` version might need adjustment based on your CUDA toolkit version and available PyTorch builds you should change it base on your system).*
 
-## Speeding Up Installation (Optional)
-
-To potentially **speed up the package installation process** in Conda, you can use `libmamba`, a fast and dependency-aware alternative solver.
-
-1.  **Install `conda-libmamba-solver`**. This package provides the libmamba solver. If your Conda version is 4.11 or above, this step can likely be skipped as `libmamba` might be included by default.
-
-    ```bash
-    conda install conda-libmamba-solver
-    ```
-
-2.  **Configure Conda to use `libmamba`**. Set `libmamba` as the default solver:
-
-    ```bash
-    conda config --set solver libmamba
-    ```
-
-This configuration should result in faster package installations.
-
-## Using Ultralytics Docker Image (Alternative)
-
-As an alternative to setting up the environment manually, Ultralytics offers **Docker images with a Conda environment included**. Using Docker ensures a consistent and reproducible environment.
-
-You can pull and run the latest Ultralytics image with the Conda environment using:
-
-```bash
-sudo docker pull ultralytics/ultralytics:latest-conda
-sudo docker run -it --ipc=host --gpus all ultralytics/ultralytics:latest-conda # Example with GPU support
-```
-
-This approach is ideal for deployment or complex workflows without manual configuration.
-
 ## Next Steps
 
-You have successfully set up your environment and installed the necessary packages for running Ultralytics. You are now ready to proceed to the next step: **Dataset Preparation**.
+Once you have successfully set up your environment and installed the necessary packages for running Ultralytics. You are now ready to proceed to the next step: **[Dataset Preparation](Docs/2_Dataset_Preparation/2_Dataset_Preparation.md)**.
