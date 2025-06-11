@@ -32,11 +32,7 @@ PARALLEL = True  # Set to False to disable parallel processing
 NUM_CORES = 8    # Maximum CPU cores to use (None = all available)
 
 # Class list in order (index will be used as class ID in YOLO format)
-OCR_CHARACTERS_NAME = [
-    '0', '1', '2', '3', '4', '5', '6', '7', '8', '9'
-    ,'الف', 'ب', 'ت', 'ث', 'ج', 'د', 'س', 'ش', 'ص'
-    ,'ط', 'ظ', 'ع', 'ق', 'ل', 'م', 'ن', 'ه\u200d'
-    , 'و', 'پ', 'ژ (معلولین و جانبازان)', 'کل ناحیه پلاک', 'ی']
+OCR_CHARACTERS_NAME = ["PUT","YOUR","FOUNDED","CLASSES","HERE"]
 
 # ========== HELPER FUNCTIONS ==========
 
