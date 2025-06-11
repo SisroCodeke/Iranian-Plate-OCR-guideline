@@ -15,6 +15,7 @@ from pathlib import Path
 import multiprocessing
 from concurrent.futures import ProcessPoolExecutor, as_completed
 import psutil
+import shutil  
 import time
 from tqdm import tqdm
 from PIL import Image
@@ -32,7 +33,11 @@ PARALLEL = True  # Set to False to disable parallel processing
 NUM_CORES = 8    # Maximum CPU cores to use (None = all available)
 
 # Class list in order (index will be used as class ID in YOLO format)
-OCR_CHARACTERS_NAME = ["PUT","YOUR","FOUNDED","CLASSES","HERE"]
+OCR_CHARACTERS_NAME = [
+    '0', '1', '2', '3', '4', '5', '6', '7', '8', '9'
+    ,'الف', 'ب', 'ت', 'ث', 'ج', 'د', 'س', 'ش', 'ص'
+    ,'ط', 'ظ', 'ع', 'ق', 'ل', 'م', 'ن', 'ه\u200d'
+    , 'و', 'پ', 'ژ (معلولین و جانبازان)', 'کل ناحیه پلاک', 'ی']
 
 # ========== HELPER FUNCTIONS ==========
 
@@ -130,9 +135,74 @@ def get_image_size(xml_path):
     raise ValueError(f"Could not find corresponding image file for {xml_path}. Tried: {xml_basename}.jpg/.jpeg/.png/.bmp")
 
 
+# def process_xml_file(xml_path):
+#     """
+#     Process a single Pascal VOC XML file and convert it to YOLO format.
+    
+#     Args:
+#         xml_path (tuple): (input_path, output_dir) paths
+        
+#     Returns:
+#         tuple: (success, xml_path, message)
+#     """
+#     xml_path, output_dir = xml_path
+#     try:
+#         # Parse the XML file
+#         tree = ET.parse(xml_path)
+#         root = tree.getroot()
+        
+#         # Get image dimensions
+#         try:
+#             width, height = get_image_size(xml_path)
+#         except ValueError as e:
+#             return (False, xml_path, str(e))
+        
+#         # Prepare output file path
+#         relative_path = os.path.relpath(xml_path, PASCAL_FORMAT_LABEL_PATH)
+#         yolo_path = os.path.join(output_dir, relative_path)
+#         yolo_path = os.path.splitext(yolo_path)[0] + '.txt'
+        
+#         # Create output directory if it doesn't exist
+#         os.makedirs(os.path.dirname(yolo_path), exist_ok=True)
+        
+#         # Process each object in the XML file
+#         with open(yolo_path, 'w') as f:
+#             for obj in root.iter('object'):
+#                 # Get class name
+#                 class_name = obj.find('name').text
+                
+#                 # Skip if class name is not in our list
+#                 if class_name not in OCR_CHARACTERS_NAME:
+#                     continue
+                
+#                 # Get bounding box coordinates
+#                 bndbox = obj.find('bndbox')
+#                 if bndbox is None:
+#                     continue
+                    
+#                 xmin = float(bndbox.find('xmin').text)
+#                 ymin = float(bndbox.find('ymin').text)
+#                 xmax = float(bndbox.find('xmax').text)
+#                 ymax = float(bndbox.find('ymax').text)
+                
+#                 # Convert to YOLO format
+#                 yolo_box = convert_pascal_to_yolo((width, height), (xmin, ymin, xmax, ymax))
+                
+#                 # Get class ID
+#                 class_id = get_class_id(class_name)
+                
+#                 # Write to output file
+#                 f.write(f"{class_id} {yolo_box[0]} {yolo_box[1]} {yolo_box[2]} {yolo_box[3]}\n")
+        
+#         return (True, xml_path, "Success")
+    
+#     except Exception as e:
+#         return (False, xml_path, str(e))
+
 def process_xml_file(xml_path):
     """
     Process a single Pascal VOC XML file and convert it to YOLO format.
+    Also copies the corresponding image to the output directory.
     
     Args:
         xml_path (tuple): (input_path, output_dir) paths
@@ -146,16 +216,17 @@ def process_xml_file(xml_path):
         tree = ET.parse(xml_path)
         root = tree.getroot()
         
-        # Get image dimensions
+        # Get image dimensions and path
         try:
-            width, height = get_image_size(xml_path)
+            width, height, image_path = get_image_size_and_path(xml_path)
         except ValueError as e:
             return (False, xml_path, str(e))
         
-        # Prepare output file path
+        # Prepare output file paths
         relative_path = os.path.relpath(xml_path, PASCAL_FORMAT_LABEL_PATH)
-        yolo_path = os.path.join(output_dir, relative_path)
-        yolo_path = os.path.splitext(yolo_path)[0] + '.txt'
+        base_path = os.path.splitext(os.path.join(output_dir, relative_path))[0]
+        yolo_path = base_path + '.txt'
+        image_output_path = base_path + os.path.splitext(image_path)[1] if image_path else None
         
         # Create output directory if it doesn't exist
         os.makedirs(os.path.dirname(yolo_path), exist_ok=True)
@@ -189,10 +260,65 @@ def process_xml_file(xml_path):
                 # Write to output file
                 f.write(f"{class_id} {yolo_box[0]} {yolo_box[1]} {yolo_box[2]} {yolo_box[3]}\n")
         
+        # Copy the image file if it exists
+        if image_path and os.path.exists(image_path):
+            try:
+                shutil.copy2(image_path, image_output_path)
+            except Exception as e:
+                return (True, xml_path, f"Success (but image copy failed: {str(e)})")
+        
         return (True, xml_path, "Success")
     
     except Exception as e:
         return (False, xml_path, str(e))
+
+def get_image_size_and_path(xml_path):
+    """
+    Get image size and path either from XML or from corresponding image file.
+    
+    Args:
+        xml_path (str): Path to the XML file
+        
+    Returns:
+        tuple: (width, height, image_path)
+    """
+    # First try to get size from XML
+    tree = ET.parse(xml_path)
+    root = tree.getroot()
+    
+    size = root.find('size')
+    if size is not None:
+        width = int(size.find('width').text)
+        height = int(size.find('height').text)
+        return (width, height, None)  # Return None for image_path since we don't need it
+    
+    # If not in XML, look for image file
+    xml_dir = os.path.dirname(xml_path)
+    xml_basename = os.path.splitext(os.path.basename(xml_path))[0]
+    
+    # Try common image extensions
+    for ext in ['.jpg', '.jpeg', '.png', '.bmp', '.JPG', '.JPEG', '.PNG', '.BMP']:
+        image_path = os.path.join(xml_dir, xml_basename + ext)
+        if os.path.exists(image_path):
+            try:
+                with Image.open(image_path) as img:
+                    return (img.width, img.height, image_path)
+            except Exception as e:
+                raise ValueError(f"Could not read image dimensions from {image_path}: {str(e)}")
+    
+    # If still not found, try getting filename from XML (some XMLs might have different naming)
+    filename = root.find('filename')
+    if filename is not None and filename.text:
+        image_path = os.path.join(xml_dir, filename.text)
+        if os.path.exists(image_path):
+            try:
+                with Image.open(image_path) as img:
+                    return (img.width, img.height, image_path)
+            except Exception as e:
+                raise ValueError(f"Could not read image dimensions from {image_path}: {str(e)}")
+    
+    raise ValueError(f"Could not find corresponding image file for {xml_path}. Tried: {xml_basename}.jpg/.jpeg/.png/.bmp")
+
 
 def monitor_resources():
     """Return current system resource usage statistics."""
